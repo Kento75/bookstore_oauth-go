@@ -21,7 +21,7 @@ const (
 
 var (
 	oauthRestClient = rest.RequestBuilder{
-		BaseURL: "http://localhost:8083",
+		BaseURL: "http://localhost:8082",
 		Timeout: 200 * time.Millisecond,
 	}
 )
@@ -77,6 +77,9 @@ func AuthenticateRequest(request *http.Request) *errors.RestErr {
 
 	at, err := getAccessToken(accessTokenId)
 	if err != nil {
+		if err.Status == http.StatusNotFound {
+			return nil
+		}
 		return err
 	}
 
@@ -106,6 +109,7 @@ func getAccessToken(accessTokenId string) (*accessToken, *errors.RestErr) {
 		if err := json.Unmarshal(response.Bytes(), &restErr); err != nil {
 			return nil, errors.InternalServerError("invalid error interface when trying to get access token")
 		}
+
 		return nil, &restErr
 	}
 
