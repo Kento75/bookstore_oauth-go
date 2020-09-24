@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -38,11 +39,27 @@ func IsPublic(request *http.Request) bool {
 	return request.Header.Get(headerXPublic) == "true"
 }
 
-// TODO:
-func GetCallerId() int64 { return 0 }
+func GetCallerId(request *http.Request) int64 {
+	if request == nil {
+		return 0
+	}
+	callerId, err := strconv.ParseInt(request.Header.Get(headerXCallerId), 10, 64)
+	if err != nil {
+		return 0
+	}
+	return callerId
+}
 
-// TODO:
-func GetClientId() int64 { return 0 }
+func GetClientId(request *http.Request) int64 {
+	if request == nil {
+		return 0
+	}
+	clientId, err := strconv.ParseInt(request.Header.Get(headerXClientId), 10, 64)
+	if err != nil {
+		return 0
+	}
+	return clientId
+}
 
 func AuthenticateRequest(request *http.Request) *errors.RestErr {
 	if request == nil {
